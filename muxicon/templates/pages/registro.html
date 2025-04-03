@@ -1,0 +1,18 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<div class="cabecera">
+  <div class="bg-image"></div>
+  <div class="bg-text">
+    <h2>Bienvenid@ a Muxic On </h2>
+    <h1 style="font-size:50px"><span class="namestyle mb-3">Registro</span></h1>
+    <form method="post" class="formRegistro">
+      <div class="form-group mt-3">
+      {% csrf_token %}
+      {{ form.as_p }}
+      </div>
+      <button type="submit" class="btn btn-primary">Registrarse</button>
+    
+    </form>
+  </div>
+</div>
+{% endblock %}

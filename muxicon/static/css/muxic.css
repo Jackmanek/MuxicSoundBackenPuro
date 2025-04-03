@@ -1,0 +1,334 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.nav-link{
+    font-family: "Trirong", sans-serif !important;
+}
+.logoletter{
+    font-family: "Trirong", sans-serif;
+    background-color: gainsboro;
+    padding: 0.5rem;
+    border-radius: 7.5px;
+    font-weight: 900;
+}
+.namestyle{
+    font-family: "Sofia", sans-serif;
+}
+.recolocar{
+    width: 50% !important;
+    justify-content: right;
+}
+.cabecera{
+    width: 100%;
+    height: 30rem;
+    position: relative;
+}
+.bg-image{
+    background-image: url("../img/fondo.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(8px);
+    -webkit-filter: blur(5px);
+    width: 100%;
+    height: 30rem;
+}
+.bg-text {
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0, 0.4); /* Black w/opacity/see-through */
+    color: white;
+    font-weight: bold;
+    border: 3px solid #f1f1f1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    width: 80%;
+    padding: 20px;
+    text-align: center;
+}
+.formRegistro span{
+    display: none;
+}
+.formRegistro ul{
+    display: none;
+}
+.cuerpo{
+    width: 90%;
+    margin: 2rem auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.topics{
+    width: 50%;
+    margin-bottom: 2rem;
+}
+.players{
+    width: 50%;
+    margin-bottom: 2rem;
+}
+.titulos{
+    width: 95%;
+    border-bottom: 2px solid gray;
+    display: flex;
+    justify-content: center;
+}
+.titulos h2{
+    padding: 1rem;
+}
+.contenido{
+    width: 98%;
+    margin-top: 1rem;
+}
+.cardcustome{
+    margin-top: 1rem;
+
+}
+.dates{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 12px;
+}
+.catego{
+    padding: 3px;
+    background-color: orange;
+    border-radius: 4px;
+}
+.headcostume{
+    display: flex;
+    justify-content: space-between;
+    text-transform: uppercase;
+}
+.nuevoTema{
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+}
+.headenewTema{
+    width: 98%;
+    color: rgb(121, 144, 81);
+    height: 14rem;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    background: rgb(46,36,19);
+    background: linear-gradient(180deg, rgba(46,36,19,1) 0%, rgba(133,123,97,1) 35%, rgba(244,244,244,1) 100%);
+}
+.headenewTema h3{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Trirong", sans-serif;
+    font-size: 45px;
+}
+.headenewTema h3 span{
+    margin-left: 3rem;
+    text-transform: uppercase;
+    font-family: "Sofia", sans-serif;
+    box-shadow: 1px 2px 0px -1px white;
+}
+.headenewTema h4{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    font-family: "Trirong", sans-serif;
+    color: rgba(0, 0, 0, 0.548);
+}
+.mainTema{
+    width: 98%;
+    display: flex;
+    justify-content: center;
+    background-image: url("../img/fondo.jpg");
+    border-radius: 0.5rem;
+}
+.mainTema form{
+    width: 40rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.582);
+}
+.mainTema form p{
+    width: 80%;
+    border-bottom: 4px solid green;
+    height: 5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1rem;
+    color: white;
+    font-family: "Trirong", sans-serif;
+    font-size: 19px;
+}
+.mainTema form p:nth-child(4){
+    width: 80%;
+    border-bottom: 1px solid green;
+    height: 9rem;
+    display: flex;
+    flex-wrap: wrap;
+}
+.mainTema form p label{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    justify-content: center;
+}
+.mainTema form p input{
+    height: 2rem;
+}
+.mainTema form p select{
+    height: 2rem;
+}
+.mainTema form p textarea{
+    width: 100%;
+    height: 80%;
+}
+
+.mainTema form button{
+    width: 52%;
+    height: 3rem;
+    margin-bottom: 2rem;
+}
+.cuerpoLista{
+    background-color: black;
+    color: white;
+    width: 90%;
+    margin: 0 auto;
+}
+.contenidoListas{
+    display: flex;
+    flex-wrap: wrap;
+}
+.title{
+    width: 100%;
+    border-bottom: 2px solid gray;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 6rem;
+    color: white;
+}
+.title h4{
+    width: 80%;
+    height: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.63);
+}
+
+#player {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #cac6c6;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#audio-player {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#playlist {
+    list-style: none;
+    padding: 0;
+}
+
+#playlist li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+}
+
+#playlist li.active {
+    background-color: #f0f0f0;
+}
+
+.descargas {
+    width: 80%;
+    margin: 0 auto;
+}
+.enlaces{
+    width: 90%;
+    margin: 0 auto;
+}
+.formDescarga{
+    width: 100%;
+    height: 6rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.formDescarga form{
+    width: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.formDescarga form input{
+    width: 50%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    border-radius: 10px;
+}
+.formDescarga form button{
+    border-radius: 16px;
+}
+
+@media only screen and (max-width: 414px){
+    .contenido{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .cuerpo{
+        width: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+    }
+    .cuerpo .topics{
+        width: 90%;
+    }
+    .cuerpo .players{
+        width: 90%;
+    }
+    .cuerpo .players #player{
+        width: 90%;
+    }
+    .formDescarga form{
+        width: 98%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    
+    .formDescarga form input{
+        width: 100%;
+        margin-left: 1rem;
+        margin-right: 1rem;
+        border-radius: 10px;
+    }
+    .formDescarga form button{
+        width: 80%;
+        margin-top: 1rem;
+        border-radius: 16px;
+    }
+}

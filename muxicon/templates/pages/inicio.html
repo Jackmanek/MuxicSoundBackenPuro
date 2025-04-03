@@ -1,0 +1,105 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<div class="cabecera">
+    <div class="bg-image"></div>
+    <div class="bg-text">
+      <h2>Bienvenid@s a MuxicOn de: </h2>
+      <h1 style="font-size:50px"><span class="namestyle">MuxicOn</span></h1>
+      <p>Aqui podras descargar o escuchar la biblioteca general de musica descargada</p>
+    </div>
+</div>
+{% if user.is_authenticated %}
+<div class="descargas">
+    <div class="enlaces">
+        <div class="titulos">
+            <h2>Descargar MP3 desde YouLinks(tubes)</h2>
+          </div>
+          <div class="formDescarga">
+            <form method="post" action="{% url 'download_mp3' %}">
+                {% csrf_token %}
+                <label for="youtube_url">Enlace:</label>
+                <input type="text" id="youtube_url" name="youtube_url" required>
+                <button type="submit"  class="btn btn-danger">Convertir y Descargar</button>
+            </form>
+            {% if song_url %}
+            <h2>Descarga Completa</h2>
+            <a href="{{ song_url }}">Descargar MP3</a>
+            {% endif %}
+          </div>
+    </div>
+</div>
+{% endif %}
+<div class="cuerpo">
+    <div class="topics">
+        <div class="titulos">
+          <h2>Los Tracks mas recientes</h2>
+        </div>
+        <div class="contenido">
+            <table class="table table-striped table-bordered">
+                <thead>
+                  <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Titulo</th>
+                    <th scope="col">Contenido</th>
+    
+                  </tr>
+                </thead>
+                <tbody>
+                {% for song in songs %}
+                <tr>
+                  <td>{{ song.id }}</td>
+                  <td>{{ song.title }}</td>
+                  <td>{{ song.url }}</td>
+                </tr>  
+                {% endfor %}  
+              </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="players">
+        <div class="titulos">
+            <h2>Reproductor</h2>
+        </div>
+        <div class="repro">
+          <div class="north">
+              <div class="caratula">
+                <ul id="playlist">
+                  {% for song in songs %}
+                      <li data-src="{{ song.file.url }}">{{ song.url }}</li>
+                  {% endfor %}
+                </ul>
+              </div>
+          </div>
+          <div class="centro">
+              <div class="part1">
+                  <div class="title">Track1</div>
+                  <div id="progress-container">
+                      <div id="progress-bar"></div>
+                  </div>
+              </div>
+              <div class="part3">
+                  <div id="time-remaining"> -- : -- / -- : -- </div>
+                  <div id="volume-control">
+                      <i class="fa-solid fa-volume-high"></i>
+                      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="1">
+                  </div>
+              </div>
+              <div class="part2">
+                  <div id="toggle-loop"><i class="fa-solid fa-repeat"></i><i class="fa-solid fa-repeat-1"></i></div>
+                  <div><i class="fa-solid fa-music"></i></div>
+                  <div><i class="fa-solid fa-shuffle"></i></div>
+              </div>
+              
+          </div>            
+          <div class="controles">
+              <audio id="audio-player"></audio>
+              <div><button class="rev"><i class="fa-solid fa-backward-step"></i></button></div>
+              <div><button class="start"><i class="fa-solid fa-play btnStart"></i><i class="fa-solid fa-pause btnPause"></i></button></div>
+              <div><button class="few"><i class="fa-solid fa-forward-step"></i></button></div>
+          </div>  
+      </div>
+
+    </div>   
+
+</div>
+{% endblock %}

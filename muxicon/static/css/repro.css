@@ -1,0 +1,223 @@
+*{
+    margin: 0;
+    padding: 0%;
+    box-sizing: border-box;
+}
+.contenedor{
+    width: 390px;
+    height: 844px;
+}
+.changesOn{
+    background-color: #dfdfdf;
+    color: black;
+}
+.changesOff{
+    background-color: transparent;
+}
+.repro{
+    margin: 0 auto;
+    width: 390px;
+    height: 844px;
+    border: 0.5px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(
+        0deg,
+        hsl(0deg 0% 0%) 0%,
+        hsl(35deg 44% 25%) 40%,
+        hsl(14deg 18% 27%) 54%,
+        hsl(360deg 4% 14%) 66%,
+        hsl(339deg 0% 0%) 81%,
+        hsl(0deg 0% 0%) 100%
+    );
+}
+.repro audio a{
+    width: 1rem;
+    height: 1rem;
+    border: 1px solid black;
+}
+.controles{
+    justify-content: space-around;
+    width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    height: 15%;
+    align-items: center;
+}
+.controles div{
+    width: 30%;
+    display: flex;
+    justify-content: space-around;
+    border: 0.5px ridge;
+    height: 65%;
+    align-items: center;
+    border-radius: 16px;
+}
+.controles div button{
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    border: none;
+}
+.controles div button i:hover{
+    background-color: #dfdfdf;
+    color:white;
+    
+}
+.controles div button i{
+    font-size: 2rem;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 16px;
+    color: #f0f0f0;
+}
+
+
+#progress-container {
+    width: 94%;
+    height: 10px;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin-top: 10px;
+    position: relative;
+    margin: 0 auto;
+    margin-bottom: 18px;
+}
+
+#progress-bar {
+    height: 90%;
+    background-color: #b6bcc5;
+    width: 0%;
+    border-radius: 5px;
+    transition: width 0.1s;
+}
+#time-remaining {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.centro{
+    width: 100%;
+    height: 25%;
+    display: flex;
+    flex-wrap: wrap;
+}
+.part1{
+    width: 100%;
+    height: 33%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: end;
+}
+.title{
+    width: 90%;
+    height: 30%;
+    background-color: #3d3f4193;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+.part2{
+    width: 100%;
+    height: 33%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.part2 div{
+    width: 15%;
+    height: 80%;
+    border: 0.5px ridge;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 52%;
+}
+.part2 div:hover{
+    background-color: #dfdfdf;
+    color:white;
+}
+.part2 div i{
+    color: #f0f0f0;
+}
+.part3{
+    width: 100%;
+    height: 33%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+#volume-control {
+    margin-top: 10px;
+    width: 60%;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+}
+#volume-control i{
+    width: 10%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #f0f0f0;
+}
+#volume-slider {
+    width: 70%;
+    display: flex;
+    align-items: center;
+}
+.north{
+    width: 100%;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.caratula{
+    width: 90%;
+    height: 90%;
+    background-color: aliceblue;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #888 #e0e0e0;
+}
+.caratula::-webkit-scrollbar {
+    width: 10px; /* Ancho del scrollbar */
+}
+.caratula::-webkit-scrollbar-track {
+    background: #e0e0e0; /* Color de fondo del track */
+}
+.caratula::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color del thumb */
+    border-radius: 10px; /* Bordes redondeados del thumb */
+    border: 2px solid #e0e0e0; /* Espacio alrededor del thumb */
+}
+#playlist {
+    list-style: none;
+    padding: 0;
+}
+#playlist li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ccc;
+}
+
+#playlist li.active {
+    background-color: #f0f0f0;
+}

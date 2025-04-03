@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descargar MP3</title>
+</head>
+<body>
+    <h1>Descargar MP3 desde YouTube</h1>
+    <form method="POST" action="{% url 'download_mp3' %}">
+        {% csrf_token %}
+        <label for="youtube_url">Enlace de YouTube:</label>
+        <input type="text" id="youtube_url" name="youtube_url" required>
+        <button type="submit">Convertir y Descargar</button>
+    </form>
+
+    {% if song_url %}
+        <h2>Descarga Completa</h2>
+        <a href="{{ song_url }}">Descargar MP3</a>
+    {% endif %}
+</body>
+</html>

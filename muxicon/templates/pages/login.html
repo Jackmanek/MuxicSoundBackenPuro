@@ -1,0 +1,16 @@
+{% extends 'app/base.html' %}
+{% block content %}
+<div class="cabecera">
+  <div class="bg-image"></div>
+  <div class="bg-text">
+    <h2>Bienvenid@ a Muxic On </h2>
+    <h1 style="font-size:50px"><span class="namestyle">Iniciar sesión</span></h1>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Iniciar sesión</button>
+    </form>
+  </div>
+</div>
+  
+{% endblock %}
