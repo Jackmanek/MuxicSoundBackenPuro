@@ -36,8 +36,7 @@ import os
 import yt_dlp
 from yt_dlp import YoutubeDL
 from .models import Song
-import re
-import unicodedata
+from .serializers import UserSerializer
 
 @api_view(['GET'])
 def inicio(request):
@@ -45,20 +44,18 @@ def inicio(request):
     song_data = [{"title": song.title, "artist": song.artist, "url": song.url} for song in songs]
     return Response(song_data, status=status.HTTP_200_OK)
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ['username', 'password']
-
 @api_view(['POST'])
 def registro(request):
-    if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+    print("Datos recibidos:", request.data)
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        print("Datos válidos:", serializer.validated_data)
+        serializer.save()
+        return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
+    else:
+        print("Errores de validación:", serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            
 @api_view(['POST'])
 def login_view(request):
     username = request.data.get('username')
