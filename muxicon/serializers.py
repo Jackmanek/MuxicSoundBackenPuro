@@ -18,17 +18,23 @@ class PlaylistSongSerializer(serializers.ModelSerializer):
         fields = ['id', 'playlist', 'song', 'added_date']
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=6, error_messages={
+        'min_length': 'La contraseña debe tener al menos 6 caracteres.',
+        'blank': 'La contraseña no puede estar vacía.'
+    })
 
     class Meta:
         model = User
         fields = ['id', 'username', 'password']
-
+    def validate_username(self, value):
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError('Este nombre de usuario ya está en uso.')
+        if len(value.strip()) == 0:
+            raise serializers.ValidationError('El nombre de usuario no puede estar vacío.')
+        return value
     def create(self, validated_data):
-        print("Datos validados antes de crear usuario:", validated_data)
         user = User.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password']
         )
-        print("Contraseña en la base de datos después de create_user:", user.password)
         return user

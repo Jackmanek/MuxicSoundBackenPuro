@@ -6,37 +6,30 @@ from rest_framework import status
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from django.http import JsonResponse
-from django.contrib.auth import authenticate
 from .serializers import SongSerializer
 import os
 import re
 import unicodedata
 from django.conf import settings
 from youtube_dl import YoutubeDL
-from .models import Song
 from django.shortcuts import render, redirect, get_object_or_404
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from pytube import YouTube
 from moviepy.editor import *
-import os
 import yt_dlp
 from yt_dlp import YoutubeDL
 from .models import Song
 from .serializers import UserSerializer
+from django.db.models import Q
 
 @api_view(['GET'])
 def inicio(request):
@@ -46,15 +39,15 @@ def inicio(request):
 
 @api_view(['POST'])
 def registro(request):
-    print("Datos recibidos:", request.data)
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
-        print("Datos válidos:", serializer.validated_data)
         serializer.save()
         return Response({"message": "User created successfully"}, status=status.HTTP_201_CREATED)
     else:
-        print("Errores de validación:", serializer.errors)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        formatted_errors = {
+        field: ' '.join(errors) for field, errors in serializer.errors.items()
+        }
+        return Response({"errors": formatted_errors}, status=status.HTTP_400_BAD_REQUEST)
             
 @api_view(['POST'])
 def login_view(request):
@@ -64,7 +57,7 @@ def login_view(request):
     if user is not None:
         token = RefreshToken.for_user(user)
         return Response({"access": str(token.access_token), "refresh": str(token)}, status=status.HTTP_200_OK)
-    return Response({"message": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+    return Response({"message": "Nombre de Usuario o contraseña no validos"}, status=status.HTTP_400_BAD_REQUEST)
 
 class SongListView(APIView):
     permission_classes = [IsAuthenticated]  # Solo permite acceso a usuarios autenticados
@@ -155,3 +148,24 @@ def eliminar_song(request, song_id):
         return Response({"message": "Canción eliminada correctamente."}, status=status.HTTP_200_OK)
     except Song.DoesNotExist:
         return Response({"error": "Canción no encontrada o no tienes permiso para eliminarla."}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def buscar_canciones(request):
+    query = request.GET.get('q', '')
+    try:
+        if query:
+            canciones = Song.objects.filter(
+                Q(title__icontains=query) |
+                Q(artist__icontains=query) |
+                Q(url__icontains=query) |
+                Q(file__icontains=query)
+            )
+        else:
+            canciones = Song.objects.all()
+
+        serializer = SongSerializer(canciones, many=True)
+        return Response(serializer.data)
+
+    except Exception as e:
+        print("ERROR EN BUSQUEDA:", str(e))
+        return Response({'error': 'Ocurrió un error interno'}, status=500)
