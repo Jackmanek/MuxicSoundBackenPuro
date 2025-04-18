@@ -1,4 +1,4 @@
-
+from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Song
@@ -30,6 +30,7 @@ from yt_dlp import YoutubeDL
 from .models import Song
 from .serializers import UserSerializer
 from django.db.models import Q
+from .utils import get_audio_duration
 
 @api_view(['GET'])
 def inicio(request):
@@ -94,7 +95,7 @@ def download_mp3(request):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'ffmpeg_location': '/usr/local/bin/ffmpeg',
+        'ffmpeg_location': r'C:\ffmpeg\bin',
         'outtmpl': os.path.join(settings.MEDIA_ROOT, 'songs', 'temp.%(ext)s'),
         'verbose': True,
     }
@@ -116,26 +117,43 @@ def download_mp3(request):
         safe_title = safe_title.encode('utf-8', errors='ignore').decode('utf-8')
         safe_artist = safe_artist.encode('utf-8', errors='ignore').decode('utf-8')
 
+        def get_next_track_number(user):
+            last_songs = Song.objects.filter(user=user).order_by('-id')[:10]
+            for song in last_songs:
+                match = re.match(r'Track(\d+)', song.title)
+                if match:
+                    return int(match.group(1)) + 1
+            return 1
+        new_track_number = get_next_track_number(request.user)
+        """
         last_song = Song.objects.filter(user=request.user).order_by('-id').first()
         new_track_number = (int(re.match(r'Track(\d+)', last_song.title).group(1)) + 1) if last_song else 1
-
+        """
+        
         mp3_filename = f"Track{new_track_number}_{safe_artist}_{safe_title}.mp3"
         song_url = os.path.join('songs', mp3_filename)
 
         original_file_path = os.path.join(settings.MEDIA_ROOT, 'songs', 'temp.mp3')
         new_file_path = os.path.join(settings.MEDIA_ROOT, song_url)
-
+        
+        if os.path.exists(new_file_path):
+            os.remove(new_file_path)
         if os.path.exists(original_file_path):
             os.rename(original_file_path, new_file_path)
         else:
             return Response({"error": "El archivo no se descargó correctamente."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        song = Song(title=mp3_filename, artist=artist, file=song_url, user=request.user, url=title)
+        
+        if not os.path.exists(new_file_path):
+            return Response({"error": "Archivo MP3 no encontrado después del rename."}, status=500)
+        duration = get_audio_duration(new_file_path)
+        song = Song(title=mp3_filename, artist=artist, file=song_url, user=request.user, url=title, download_date=timezone.now(), duration=duration)
         song.save()
 
-        return Response({"message": "Canción descargada correctamente.", "song": song_url}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Canción descargada correctamente.", "song":  SongSerializer(song).data}, status=status.HTTP_201_CREATED)
 
     except Exception as e:
+        import traceback
+        print(traceback.format_exc())
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-g*qi2k4m20id^ln1tllg43^@)5f23p2__z@cbq%4@+i09yx%)1
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -93,7 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'muxicon',
         'USER': 'root',
-        'PASSWORD': 'quieroser12',
+        'PASSWORD': 'root',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -147,3 +147,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+FFMPEG_PATH = r'C:\ffmpeg\bin'
