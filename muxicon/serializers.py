@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class SongSerializer(serializers.ModelSerializer):
     class Meta:
         model = Song
-        fields = ['id', 'title', 'artist', 'url', 'file', 'user', 'download_date']
+        fields = ['id', 'title', 'artist', 'url', 'file', 'user', 'download_date', 'duration']
 
 class PlaylistSerializer(serializers.ModelSerializer):
     class Meta:

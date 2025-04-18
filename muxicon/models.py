@@ -8,7 +8,7 @@ class Song(models.Model):
     file = models.FileField(upload_to='media/songs/')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='songs')
     download_date = models.DateTimeField(auto_now_add=True)
-
+    duration = models.IntegerField(null=True, blank=True)
     def __str__(self):
         return self.title
 
