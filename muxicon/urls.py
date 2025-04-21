@@ -22,6 +22,12 @@ urlpatterns = [
     path('songs/search/', buscar_canciones, name='buscar_canciones'),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('playlists/create/', views.crear_playlist),
+    path('playlists/delete/<int:playlist_id>/', views.eliminar_playlist),
+    path('playlists/add-song/', views.añadir_cancion_a_playlist),
+    path('playlists/remove-song/', views.eliminar_cancion_de_playlist),
+    path('playlists/', views.obtener_playlists),
+    path('playlists/reorder/', views.reordenar_playlist),
 ]
 
 if settings.DEBUG:

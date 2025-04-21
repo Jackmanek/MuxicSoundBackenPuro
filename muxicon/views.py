@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Song
+from .models import Song, Playlist, PlaylistSong
 from rest_framework import status
 from rest_framework import serializers
 from django.contrib.auth.models import User
@@ -27,7 +27,6 @@ from pytube import YouTube
 from moviepy.editor import *
 import yt_dlp
 from yt_dlp import YoutubeDL
-from .models import Song
 from .serializers import UserSerializer
 from django.db.models import Q
 from .utils import get_audio_duration
@@ -187,3 +186,83 @@ def buscar_canciones(request):
     except Exception as e:
         print("ERROR EN BUSQUEDA:", str(e))
         return Response({'error': 'Ocurrió un error interno'}, status=500)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def crear_playlist(request):
+    nombre = request.data.get('name')
+    if not nombre:
+        return Response({'error': 'Nombre es requerido'}, status=400)
+    playlist = Playlist.objects.create(name=nombre, user=request.user)
+    return Response({'message': 'Playlist creada', 'playlist_id': playlist.id})
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def eliminar_playlist(request, playlist_id):
+    try:
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        playlist.delete()
+        return Response({'message': 'Playlist eliminada'})
+    except Playlist.DoesNotExist:
+        return Response({'error': 'Playlist no encontrada'}, status=404)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def añadir_cancion_a_playlist(request):
+    playlist_id = request.data.get('playlist_id')
+    song_id = request.data.get('song_id')
+
+    try:
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        song = Song.objects.get(id=song_id, user=request.user)
+
+        PlaylistSong.objects.create(playlist=playlist, song=song)
+        return Response({'message': 'Canción añadida a la playlist'})
+    except (Playlist.DoesNotExist, Song.DoesNotExist):
+        return Response({'error': 'Playlist o canción no encontrada'}, status=404)
+    
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def eliminar_cancion_de_playlist(request):
+    playlist_id = request.data.get('playlist_id')
+    song_id = request.data.get('song_id')
+
+    try:
+        relacion = PlaylistSong.objects.get(playlist_id=playlist_id, song_id=song_id)
+        relacion.delete()
+        return Response({'message': 'Canción eliminada de la playlist'})
+    except PlaylistSong.DoesNotExist:
+        return Response({'error': 'Relación no encontrada'}, status=404)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def obtener_playlists(request):
+    playlists = Playlist.objects.filter(user=request.user)
+    data = []
+    for p in playlists:
+        canciones = p.songs.all()
+        data.append({
+            'id': p.id,
+            'name': p.name,
+            'songs': SongSerializer(canciones, many=True).data
+        })
+    return Response(data)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def reordenar_playlist(request):
+    playlist_id = request.data.get('playlist_id')
+    nueva_orden = request.data.get('song_ids')  # Lista de IDs en nuevo orden
+
+    try:
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+
+        for idx, song_id in enumerate(nueva_orden):
+            ps = PlaylistSong.objects.get(playlist=playlist, song_id=song_id)
+            ps.position = idx
+            ps.save()
+
+        return Response({'message': 'Playlist reordenada'})
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
