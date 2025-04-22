@@ -17,7 +17,7 @@ class Playlist(models.Model):
     name = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='playlists')
     songs = models.ManyToManyField(Song, through='PlaylistSong')
-
+    created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return self.name
 
@@ -25,11 +25,9 @@ class Playlist(models.Model):
 class PlaylistSong(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    added_date = models.DateTimeField(auto_now_add=True)
-    position = models.PositiveIntegerField(default=0)
-
+    order = 0
+    added_at = models.DateTimeField(auto_now_add=True)
+    
     class Meta:
-        ordering = ['position']
-
-    def __str__(self):
-        return f'{self.playlist.name} - {self.song.title}'
+        ordering = ['order']
+        unique_together = ('playlist', 'song') 
