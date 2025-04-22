@@ -190,79 +190,160 @@ def buscar_canciones(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def crear_playlist(request):
-    nombre = request.data.get('name')
-    if not nombre:
-        return Response({'error': 'Nombre es requerido'}, status=400)
-    playlist = Playlist.objects.create(name=nombre, user=request.user)
-    return Response({'message': 'Playlist creada', 'playlist_id': playlist.id})
+    """Crear una nueva playlist"""
+    name = request.data.get('name')
+    if not name:
+        return Response({'error': 'El nombre es requerido'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    playlist = Playlist.objects.create(name=name, user=request.user)
+    return Response({'id': playlist.id, 'name': playlist.name}, status=status.HTTP_201_CREATED)
 
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def eliminar_playlist(request, playlist_id):
+    """Eliminar una playlist"""
     try:
         playlist = Playlist.objects.get(id=playlist_id, user=request.user)
         playlist.delete()
-        return Response({'message': 'Playlist eliminada'})
+        return Response({'message': 'Playlist eliminada correctamente'}, status=status.HTTP_200_OK)
     except Playlist.DoesNotExist:
-        return Response({'error': 'Playlist no encontrada'}, status=404)
+        return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def añadir_cancion_a_playlist(request):
-    playlist_id = request.data.get('playlist_id')
-    song_id = request.data.get('song_id')
-
+def añadir_cancion_a_playlist(request, playlist_id):
+    """Añadir una canción a una playlist"""
     try:
         playlist = Playlist.objects.get(id=playlist_id, user=request.user)
-        song = Song.objects.get(id=song_id, user=request.user)
-
-        PlaylistSong.objects.create(playlist=playlist, song=song)
-        return Response({'message': 'Canción añadida a la playlist'})
-    except (Playlist.DoesNotExist, Song.DoesNotExist):
-        return Response({'error': 'Playlist o canción no encontrada'}, status=404)
+        song_id = request.data.get('song_id')
+        
+        if not song_id:
+            return Response({'error': 'ID de canción requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            song = Song.objects.get(id=song_id)
+            
+            # Verificar si la canción ya está en la playlist
+            if PlaylistSong.objects.filter(playlist=playlist, song=song).exists():
+                return Response({'error': 'La canción ya está en la playlist'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Obtener el orden más alto actual y añadir la canción al final
+            last_order = PlaylistSong.objects.filter(playlist=playlist).order_by('-order').first()
+            new_order = 1 if not last_order else last_order.order + 1
+            
+            playlist_song = PlaylistSong.objects.create(playlist=playlist, song=song, order=new_order)
+            
+            return Response({
+                'message': 'Canción añadida correctamente',
+                'song': {
+                    'id': song.id,
+                    'title': song.title,
+                    'artist': song.artist,
+                    'album': song.album,
+                    'order': playlist_song.order
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Song.DoesNotExist:
+            return Response({'error': 'Canción no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+            
+    except Playlist.DoesNotExist:
+        return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def eliminar_cancion_de_playlist(request):
-    playlist_id = request.data.get('playlist_id')
-    song_id = request.data.get('song_id')
-
+def eliminar_cancion_de_playlist(request, playlist_id):
+    """Eliminar una canción de una playlist"""
     try:
-        relacion = PlaylistSong.objects.get(playlist_id=playlist_id, song_id=song_id)
-        relacion.delete()
-        return Response({'message': 'Canción eliminada de la playlist'})
-    except PlaylistSong.DoesNotExist:
-        return Response({'error': 'Relación no encontrada'}, status=404)
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        song_id = request.data.get('song_id')
+        
+        if not song_id:
+            return Response({'error': 'ID de canción requerido'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            song = Song.objects.get(id=song_id)
+            
+            try:
+                playlist_song = PlaylistSong.objects.get(playlist=playlist, song=song)
+                playlist_song.delete()
+                
+                # Reordenar las canciones restantes
+                remaining_songs = PlaylistSong.objects.filter(playlist=playlist).order_by('order')
+                for i, ps in enumerate(remaining_songs, 1):
+                    ps.order = i
+                    ps.save()
+                
+                return Response({'message': 'Canción eliminada correctamente'}, status=status.HTTP_200_OK)
+            except PlaylistSong.DoesNotExist:
+                return Response({'error': 'La canción no está en la playlist'}, status=status.HTTP_404_NOT_FOUND)
+                
+        except Song.DoesNotExist:
+            return Response({'error': 'Canción no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+            
+    except Playlist.DoesNotExist:
+        return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
     
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def obtener_playlists(request):
+    """Obtener todas las playlists del usuario autenticado"""
     playlists = Playlist.objects.filter(user=request.user)
-    data = []
-    for p in playlists:
-        canciones = p.songs.all()
-        data.append({
-            'id': p.id,
-            'name': p.name,
-            'songs': SongSerializer(canciones, many=True).data
-        })
+    data = [{'id': playlist.id, 'name': playlist.name} for playlist in playlists]
     return Response(data)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def reordenar_playlist(request):
-    playlist_id = request.data.get('playlist_id')
-    nueva_orden = request.data.get('song_ids')  # Lista de IDs en nuevo orden
-
+def reordenar_playlist(request, playlist_id):
+    """Reordenar las canciones de una playlist"""
     try:
         playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        song_ids = request.data.get('song_ids', [])
+        
+        if not song_ids or not isinstance(song_ids, list):
+            return Response({'error': 'La lista de IDs de canciones es requerida'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar que todas las canciones están en la playlist
+        playlist_songs = PlaylistSong.objects.filter(playlist=playlist)
+        playlist_song_ids = set(ps.song.id for ps in playlist_songs)
+        
+        if not all(song_id in playlist_song_ids for song_id in song_ids):
+            return Response({'error': 'Una o más canciones no están en la playlist'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Actualizar el orden de las canciones
+        for i, song_id in enumerate(song_ids, 1):
+            song = Song.objects.get(id=song_id)
+            playlist_song = PlaylistSong.objects.get(playlist=playlist, song=song)
+            playlist_song.order = i
+            playlist_song.save()
+        
+        return Response({'message': 'Playlist reordenada correctamente'}, status=status.HTTP_200_OK)
+        
+    except Playlist.DoesNotExist:
+        return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
 
-        for idx, song_id in enumerate(nueva_orden):
-            ps = PlaylistSong.objects.get(playlist=playlist, song_id=song_id)
-            ps.position = idx
-            ps.save()
-
-        return Response({'message': 'Playlist reordenada'})
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def obtener_canciones_playlist(request, playlist_id):
+    """Obtener todas las canciones de una playlist"""
+    try:
+        playlist = Playlist.objects.get(id=playlist_id, user=request.user)
+        
+        # Obtener canciones ordenadas por su posición en la playlist
+        playlist_songs = PlaylistSong.objects.filter(playlist=playlist).order_by('order')
+        songs = []
+        
+        for ps in playlist_songs:
+            song = ps.song
+            songs.append({
+                'id': song.id,
+                'title': song.title,
+                'artist': song.artist,
+                'album': song.album,
+                'order': ps.order
+            })
+        
+        return Response(songs)
+    except Playlist.DoesNotExist:
+        return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
