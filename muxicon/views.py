@@ -94,7 +94,7 @@ def download_mp3(request):
             'preferredcodec': 'mp3',
             'preferredquality': '192',
         }],
-        'ffmpeg_location': r'C:\ffmpeg\bin',
+        'ffmpeg_location': '/usr/local/bin/ffmpeg',
         'outtmpl': os.path.join(settings.MEDIA_ROOT, 'songs', 'temp.%(ext)s'),
         'verbose': True,
     }
@@ -239,7 +239,6 @@ def añadir_cancion_a_playlist(request, playlist_id):
                     'id': song.id,
                     'title': song.title,
                     'artist': song.artist,
-                    'album': song.album,
                     'order': playlist_song.order
                 }
             }, status=status.HTTP_201_CREATED)
@@ -340,10 +339,19 @@ def obtener_canciones_playlist(request, playlist_id):
                 'id': song.id,
                 'title': song.title,
                 'artist': song.artist,
-                'album': song.album,
                 'order': ps.order
             })
         
         return Response(songs)
     except Playlist.DoesNotExist:
         return Response({'error': 'Playlist no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_profile(request):
+    user = request.user
+    return Response({
+        'id': user.id,
+        'username': user.username,
+        'email': user.email,
+    })

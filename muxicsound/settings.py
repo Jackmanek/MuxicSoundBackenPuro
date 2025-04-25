@@ -93,7 +93,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'muxicon',
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'quieroser12',
         'HOST': '127.0.0.1',
         'PORT': '3306',
     }
@@ -147,4 +147,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-FFMPEG_PATH = r'C:\ffmpeg\bin'
+FFMPEG_PATH = '/usr/local/bin/'
