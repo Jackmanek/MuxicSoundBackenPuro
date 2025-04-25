@@ -25,7 +25,7 @@ class Playlist(models.Model):
 class PlaylistSong(models.Model):
     playlist = models.ForeignKey(Playlist, on_delete=models.CASCADE)
     song = models.ForeignKey(Song, on_delete=models.CASCADE)
-    order = 0
+    order = models.IntegerField(default=0)
     added_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:

@@ -15,6 +15,7 @@ from .views import buscar_canciones
 urlpatterns = [
     path('register/', views.registro, name='registro'),
     path('login/', views.login_view, name='login'),
+    path('user/', views.user_profile, name='user_profile'),
     path('songs/', views.SongListView.as_view(), name='song_list'),
     path('songs/add/', add_song, name='add_song'),
     path('songs/download/', download_mp3, name='download_mp3'),
